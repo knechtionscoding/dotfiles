@@ -120,3 +120,10 @@ eval "$(rbenv init -)"
 # tabtab source for packages
 # uninstall by removing these lines
 [[ -f ~/.config/tabtab/__tabtab.zsh ]] && . ~/.config/tabtab/__tabtab.zsh || true
+export PATH=$PATH:$(go env GOPATH)/bin
+export GOPATH=$(go env GOPATH)
+
+export PATH=$PATH:/Users/hans.knecht/Library/Python/3.8/bin
+
+alias config='/usr/bin/git --git-dir=/Users/hans.knecht/.cfg/ --work-tree=/Users/hans.knecht'
+
