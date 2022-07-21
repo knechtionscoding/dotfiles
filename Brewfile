@@ -18,6 +18,7 @@ brew "jsonlint"
 brew "tflint"
 brew "yamllint"
 brew "shellcheck"
+brew "markdownlint-cli"
 
 cask "postman"
 cask "google-cloud-sdk"
