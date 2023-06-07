@@ -101,7 +101,6 @@ source $ZSH/oh-my-zsh.sh
 export PATH=$PATH:/usr/local/go/bin
 export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
-export PATH="$PATH:/Users/hknecht/Documents/Repositories/cloud-services-infra/bin"
 
 #################
 # ENV Variables #
@@ -109,8 +108,6 @@ export PATH="$PATH:/Users/hknecht/Documents/Repositories/cloud-services-infra/bi
 
 export HOMEBREW_NO_ENV_HINTS=1
 export GPG_TTY=$(tty)
-export MOW_AUTH_TOOL=gimme-aws-creds
-export GH_HOST=github.infra.cloudera.com
 
 ## Required to make podman and cosign work together
 export DOCKER_CONFIG=~/.config/containers
