@@ -1023,6 +1023,12 @@
         "options": {
           "full_name": "visual-studio-code"
         }
+      },
+      "gpg-suite": {
+        "version": "2023.2",
+        "options": {
+          "full_name": "gpg-suite"
+        }
       }
     },
     "tap": {
