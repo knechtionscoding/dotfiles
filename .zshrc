@@ -102,6 +102,14 @@ export PATH=$PATH:/usr/local/go/bin
 export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
 
+###########
+# Tooling #
+###########
+
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+
 #################
 # ENV Variables #
 #################
@@ -112,21 +120,4 @@ export GPG_TTY=$(tty)
 ## Required to make podman and cosign work together
 export DOCKER_CONFIG=~/.config/containers
 
-###########
-# Aliases #
-###########
-
-## K8s Aliases
-alias ktail="stern"
-alias krun="kubectl run hans-shell --rm -i -tty --image ubuntu:devel -- bash"
-alias kattach="kubectl attach hans-shell -c hans-shell -i -t"
-alias kgivs="kubectl get virtualservice.networking.istio.io"
-alias kgigw="kubectl get gateway.networking.istio.io"
-alias kgidr="kubectl get destinationrule.networking.istio.io"
-alias kgise="kubectl get serviceentry.networking.istio.io"
-
-# System Aliases
-alias docker="podman"
-
-# Tools Aliases
-alias mdlint="markdownlint"
+source $HOME/.aliases
