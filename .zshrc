@@ -122,3 +122,6 @@ export GPG_TTY=$(tty)
 export DOCKER_CONFIG=~/.config/containers
 
 source $HOME/.aliases
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
