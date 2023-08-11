@@ -12,7 +12,7 @@ alias kgidr="kubectl get destinationrule.networking.istio.io"
 alias kgise="kubectl get serviceentry.networking.istio.io"
 
 # System Aliases
-alias docker="podman"
+# alias docker="podman"
 
 # Tools Aliases
 alias mdlint="markdownlint"

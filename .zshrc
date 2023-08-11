@@ -68,6 +68,7 @@ plugins=(git kube-aliases dotenv aws)
 
 source $ZSH/oh-my-zsh.sh
 
+source /etc/zshrc
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -123,5 +124,23 @@ export DOCKER_CONFIG=~/.config/containers
 
 source $HOME/.aliases
 
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+mac_config () {
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+  alias brew86="arch --x86_64 /usr/local/bin/brew"
+  export NVM_DIR="/Users/hknecht/.nvm"
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+  eval "$(pyenv virtualenv-init -)"
+  export STAN_BACKEND=CMDSTANPY
+  test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+}
 
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     machine=Linux;;
+    Darwin*)    machine=Mac && mac_config;;
+    CYGWIN*)    machine=Cygwin;;
+    MINGW*)     machine=MinGw;;
+    MSYS_NT*)   machine=Git;;
+    *)          machine="UNKNOWN:${unameOut}"
+esac
+echo ${machine}
