@@ -9,7 +9,7 @@ To install these dotfiles in your home directory, first clone the repository:
 
 ```shell
 cd ~
-git clone https://github.com/smkent/dotfiles
+git clone https://github.com/knechtionscoding/dotfiles/
 mv dotfiles/.git .
 rm -rf dotfiles/
 ```
