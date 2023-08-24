@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 # Interactive shell detection {{{
 
@@ -123,15 +123,14 @@ fi
 # }}}
 
 # Pin Entry Configuration {{{
-    
-if ["$(uname -s)" = "Darwin" ]; then
+if [ "$(uname -s)" = "Darwin" ]; then
     if [ ! -f "${HOME}/.gnupg/gpg-agent.conf" ]; then
         mkdir -p "${HOME}/.gnupg"
         touch "${HOME}/.gnupg/gpg-agent.conf"
-        echo "pinentry-program $(which pinentry-mac)" >> ~/.gnupg/gpg-agent.conf`
+        echo "pinentry-program $(which pinentry-mac)" >> ~/.gnupg/gpg-agent.conf
     else
         if ! grep -q "pinentry-program $(which pinentry-mac)" "${HOME}/.gnupg/gpg-agent.conf"; then
-            echo "pinentry-program $(which pinentry-mac)" >> ~/.gnupg/gpg-agent.conf`
+            echo "pinentry-program $(which pinentry-mac)" >> ~/.gnupg/gpg-agent.conf
         fi
     fi   
 fi
@@ -168,10 +167,6 @@ fi
 # }}}
 
 # Cleanup {{{
-
-# Stop recording sourced file names for auto-reload detection
-unset -f __auto_reload_source_alias
-unalias .
 
 # Unset local helper functions
 unset -f __source_if_exists

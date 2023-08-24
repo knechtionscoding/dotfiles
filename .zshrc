@@ -1,8 +1,8 @@
 #!/bin/zsh
 
-export DOTFILES_REPO_PATH='~/.dotfiles/'
-
 [ -f /etc/zshrc ] && source /etc/zshrc
+
+export ZSH_DISABLE_COMPFIX=true
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -17,31 +17,23 @@ plugins=(git kube-aliases dotenv aws)
 
 source $ZSH/oh-my-zsh.sh
 
-[ -f $DOTFILES_REPO_PATH/shell/rc ] && source $DOTFILES_REPO_PATH/shell/rc
+[ -f ~/.dotfiles/shell/rc ] && source ~/.dotfiles/shell/rc
 
 # oh-my-zsh configuration {{{
 
-if [ -d ~/.oh-my-zsh ]; then
-    echo "oh-my-zsh is already installed"
- else
+if [ ! -d ~/.oh-my-zsh ]; then
     echo "oh-my-zsh needs to be installed"
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --keep-zshrc
 fi
-
-
 
 # }}}
 
 # krew configuration
 
-if [ -f ~/.krew/bin/kubectl-krew ]; then
-    echo "krew is already installed"
- else
+if [ ! -f ~/.krew/bin/kubectl-krew ]; then
     echo "krew needs to be installed"
-    $DOTFILES_REPO_PATH/bin/install-krew
+    ~/.dotfiles/bin/install-krew
 fi
-
-
 
 # Basic settings {{{
 
