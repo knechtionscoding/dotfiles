@@ -11,3 +11,8 @@ fi
 
 # Install software from Brew
 brew bundle
+
+# Install brew fils only if on mac
+if [ "$(uname -s)" = "Darwin" ]; then
+    brew bundle --file Brewfile.mac
+fi

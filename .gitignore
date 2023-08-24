@@ -67,5 +67,6 @@
 !.zsnes/zinput.cfg
 !README.md
 !Brewfile
+!Brewfile.mac
 !Brewfile.lock.json
 !install.sh
