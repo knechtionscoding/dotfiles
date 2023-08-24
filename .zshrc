@@ -13,6 +13,9 @@ export ZSH="$HOME/.oh-my-zsh"
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="clean"
 
+# Install kube-aliases plugin
+git clone https://github.com/Dbz/kube-aliases.git ~/.oh-my-zsh/custom/plugins/kube-aliases
+
 plugins=(git kube-aliases dotenv aws)
 
 source $ZSH/oh-my-zsh.sh
