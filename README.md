@@ -24,10 +24,6 @@ rm -rf dotfiles/
 1. `cat ~/.ssh/id_rsa_pub | pbcopy`
 1. Put into github as an ssh key
 
-### Install Software
-
-1. `./install.sh`
-
 ### Configure GPG for Github
 
 1. `gpg --full-generate-key`

@@ -15,12 +15,12 @@ trap 'rm -f "${lock_file}"' EXIT
 
 cd
 
-if [ -n "${GITHUB_CODESPACE_TOKEN}" ] && [ -n "${CODESPACES}" ]; then
-    (
-        cd
-        .dotfiles/bin/dotfiles-codespace-bootstrap
-    )
-fi
+# if [ -n "${GITHUB_CODESPACE_TOKEN}" ] && [ -n "${CODESPACES}" ]; then
+#     (
+#         cd
+#         .dotfiles/bin/dotfiles-codespace-bootstrap
+#     )
+# fi
 
 echo "===="
 echo "This appears to be a new dotfiles instance!"
