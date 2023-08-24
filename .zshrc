@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-export DOTFILES_REPO_PATH='~/repos/dotfiles/.dotfiles'
+export DOTFILES_REPO_PATH='~/.dotfiles/'
 
 [ -f /etc/zshrc ] && source /etc/zshrc
 
