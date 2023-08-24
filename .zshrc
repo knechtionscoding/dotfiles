@@ -1,5 +1,8 @@
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+#!/bin/zsh
+
+export DOTFILES_REPO_PATH='~/repos/dotfiles/.dotfiles'
+
+[ -f /etc/zshrc ] && source /etc/zshrc
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -10,137 +13,65 @@ export ZSH="$HOME/.oh-my-zsh"
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="clean"
 
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to use hyphen-insensitive completion.
-# Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
-
-# Uncomment one of the following lines to change the auto-update behavior
-# zstyle ':omz:update' mode disabled  # disable automatic updates
-# zstyle ':omz:update' mode auto      # update automatically without asking
-# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
-
-# Uncomment the following line to change how often to auto-update (in days).
-# zstyle ':omz:update' frequency 13
-
-# Uncomment the following line if pasting URLs and other text is messed up.
-# DISABLE_MAGIC_FUNCTIONS="true"
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# You can also set it to another string to have that shown instead of the default red dots.
-# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
-# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-# COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# You can set one of the optional three formats:
-# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# or set a custom format using the strftime function format specifications,
-# see 'man strftime' for details.
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load?
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
 plugins=(git kube-aliases dotenv aws)
 
 source $ZSH/oh-my-zsh.sh
 
-source /etc/zshrc
-# User configuration
+[ -f $DOTFILES_REPO_PATH/shell/rc ] && source $DOTFILES_REPO_PATH/shell/rc
 
-# export MANPATH="/usr/local/man:$MANPATH"
+# oh-my-zsh configuration {{{
 
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
+if [ -d ~/.oh-my-zsh ]; then
+    echo "oh-my-zsh is already installed"
+ else
+    echo "oh-my-zsh needs to be installed"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --keep-zshrc
+fi
 
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
 
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
 
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+# }}}
 
-######################
-# Path Configuration #
-######################
+# krew configuration
 
-export PATH=$PATH:/usr/local/go/bin
-export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
-export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
-export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+if [ -f ~/.krew/bin/kubectl-krew ]; then
+    echo "krew is already installed"
+ else
+    echo "krew needs to be installed"
+    $DOTFILES_REPO_PATH/bin/install-krew
+fi
 
-###########
-# Tooling #
-###########
 
-export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
 
-#################
-# ENV Variables #
-#################
+# Basic settings {{{
 
-export HOMEBREW_NO_ENV_HINTS=1
-export GPG_TTY=$(tty)
+# History control
+setopt APPEND_HISTORY
+setopt HIST_IGNORE_SPACE
+setopt HIST_IGNORE_DUPS
 
-## Required to make podman and cosign work together
-export DOCKER_CONFIG=~/.config/containers
+# iTerm2 keymaps
+if [ "$(uname -s)" = "Darwin" ]; then
+    bindkey -e
+    bindkey '^[[1;5C' forward-word
+    bindkey '^[[1;5D' backward-word
+    bindkey '^[[1~' beginning-of-line
+    bindkey '^[[4~' end-of-line
+    bindkey '^[[H' beginning-of-line
+    bindkey '^[[F' end-of-line
+    bindkey '^[[3~' delete-char
+    # Option+Backspace can be configured to delete a word in iTerm2 by sending the
+    # following hex sequence: 0x1b 0x18
+    # More info: https://stackoverflow.com/a/29403520
+fi
 
-source $HOME/.aliases
+# }}}
 
-mac_config () {
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-  alias brew86="arch --x86_64 /usr/local/bin/brew"
-  export NVM_DIR="/Users/hknecht/.nvm"
-  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-  eval "$(pyenv virtualenv-init -)"
-  export STAN_BACKEND=CMDSTANPY
-  test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-}
-
-unameOut="$(uname -s)"
-case "${unameOut}" in
-    Linux*)     machine=Linux;;
-    Darwin*)    machine=Mac && mac_config;;
-    CYGWIN*)    machine=Cygwin;;
-    MINGW*)     machine=MinGw;;
-    MSYS_NT*)   machine=Git;;
-    *)          machine="UNKNOWN:${unameOut}"
-esac
-echo ${machine}
+# Enable additional zsh completions on OS X
+if [ "$(uname -s)" = "Darwin" ]; then
+    if type brew &>/dev/null; then
+        FPATH="$(brew --prefix)/share/zsh-completions:${FPATH}"
+        autoload -Uz compinit
+        compinit -i
+    fi
+fi

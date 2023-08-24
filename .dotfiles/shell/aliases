@@ -16,3 +16,4 @@ alias kgise="kubectl get serviceentry.networking.istio.io"
 
 # Tools Aliases
 alias mdlint="markdownlint"
+alias tf="terraform"

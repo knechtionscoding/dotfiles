@@ -1,13 +1,15 @@
 [user]
-    name = Stephen Kent
+    name = Hans Knecht
 [core]
     editor = vim
     pager = less -F -R -X -x1,5
     excludesfile = ~/.gitignore.global
+    core.ignorecase = true
 [color]
     ui = true
 [push]
     default = upstream
+    autosetupremote = true
 [pull]
     rebase = true
 [branch]

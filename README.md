@@ -2,6 +2,18 @@
 
 ## Install Instructions
 
+I recommend looking at the code and trying out individual parts you are
+interested in before installing the entire set of dotfiles.
+
+To install these dotfiles in your home directory, first clone the repository:
+
+```shell
+cd ~
+git clone https://github.com/smkent/dotfiles
+mv dotfiles/.git .
+rm -rf dotfiles/
+```
+
 ### Install Chrome
 
 1. `Install Chrome`

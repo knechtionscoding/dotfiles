@@ -1,0 +1,181 @@
+#!/bin/bash
+
+# Interactive shell detection {{{
+
+# If either of these are true, the shell is non-interactive.
+# Exit without changing any settings or printing any output.
+[[ $- != *i* ]] && return
+[ -z "${PS1}" ] && return
+
+# }}}
+
+# Helper functions {{{
+
+__stat_mode()
+{
+    if [ "$(uname -s)" = "Darwin" ]; then
+        stat -f '%A' "${@}"
+    else
+        stat -c '%a' "${@}"
+    fi
+}
+
+__stat_mtime()
+{
+    if [ "$(uname -s)" = "Darwin" ]; then
+        stat -f '%m' "${@}"
+    else
+        stat -c '%Z' "${@}"
+    fi
+}
+
+# }}}
+
+# Basic settings {{{
+
+# Increase session history size from the default 500
+HISTSIZE=100000
+
+# }}}
+
+
+
+__prepend_path_if_exists()
+{
+    # Remove any existing instances of directory from PATH
+    PATH=$(echo "${PATH}" | sed -e 's/:/\n/g' | grep -ve "^${1}\$" | xargs | tr " " ":")
+    # Prepend directory to PATH if directory exists
+    [ -d "${1}" ] && PATH="${1}:${PATH}"
+    return 0
+}
+__prepend_path_if_exists "/opt/homebrew/bin"
+__prepend_path_if_exists "${HOME}/.dotfiles/bin"
+__prepend_path_if_exists "${HOME}/.local/bin"
+__prepend_path_if_exists "${HOME}/.ruby/bin"
+__prepend_path_if_exists "${HOME}/bin"
+__prepend_path_if_exists "/usr/local/opt/coreutils/libexec/gnubin"
+__prepend_path_if_exists "/usr/local/opt/coreutils/libexec/gnuman"
+
+# }}}
+
+# GnuPG configuration {{{
+
+if [ "$(__stat_mode ~/.gnupg 2>/dev/null)" != "700" ]; then
+    chmod 0700 ~/.gnupg
+    chmod -R og-rwx ~/.gnupg
+fi
+GPG_TTY=$(tty)
+export GPG_TTY
+
+# }}}
+
+# ssh configuration {{{
+
+if [ -z "${SSH_CONNECTION}" ]; then
+    SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+    export SSH_AUTH_SOCK
+fi
+
+# }}}
+
+# Docker configuration {{{
+
+## Required to make podman and cosign work together
+export DOCKER_CONFIG=~/.config/containers
+
+# }}}
+
+# Homebrew configuration {{{
+
+export HOMEBREW_NO_ENV_HINTS=1
+
+if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+    alias brew86="arch --x86_64 /usr/local/bin/brew"
+fi
+
+# }}}
+
+# Pyenv configuration {{{
+
+if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
+  export PYENV_ROOT="$HOME/.pyenv"
+  command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
+fi
+
+# }}}
+
+# iterm configuration {{{
+if [ "$(uname -s)" = "Darwin" ]; then
+    if [ -n "${ITERM_PROFILE}" ]; then
+        export ITERM_PROFILE
+    fi
+fi
+
+if [ -n "${ITERM_PROFILE}" ]; then
+    if [ -f "${HOME}/.iterm2_shell_integration.zsh" ]; then
+        source "${HOME}/.iterm2_shell_integration.zsh"
+    fi
+fi
+
+# }}}
+
+# Pin Entry Configuration {{{
+    
+if ["$(uname -s)" = "Darwin" ]; then
+    if [ ! -f "${HOME}/.gnupg/gpg-agent.conf" ]; then
+        mkdir -p "${HOME}/.gnupg"
+        touch "${HOME}/.gnupg/gpg-agent.conf"
+        echo "pinentry-program $(which pinentry-mac)" >> ~/.gnupg/gpg-agent.conf`
+    else
+        if ! grep -q "pinentry-program $(which pinentry-mac)" "${HOME}/.gnupg/gpg-agent.conf"; then
+            echo "pinentry-program $(which pinentry-mac)" >> ~/.gnupg/gpg-agent.conf`
+        fi
+    fi   
+fi
+
+# }}}
+
+# Load additional configuration {{{
+
+__source_if_exists()
+{
+    if [ -f "${1}" ]; then
+        . "${1}"
+    fi
+}
+
+# Host-specific bashrc if available
+__source_if_exists ~/.dotfiles/lib/bashrc."${HOSTNAME}"
+
+# Aliases and helper functions
+__source_if_exists ~/.dotfiles/shell/aliases
+
+# Local configuration files
+__source_if_exists ~/.local/shell-rc
+__source_if_exists ~/.local/shell-aliases
+
+# }}}
+
+# Display basic settings on first invocation {{{
+
+if [ ! -f "${DOTFILES_DATA}/welcome_message" ]; then
+    "${HOME}"/.dotfiles/bin/dotfiles-first-run
+fi
+
+# }}}
+
+# Cleanup {{{
+
+# Stop recording sourced file names for auto-reload detection
+unset -f __auto_reload_source_alias
+unalias .
+
+# Unset local helper functions
+unset -f __source_if_exists
+unset -f __prepend_path_if_exists
+unset -f __stat_mode
+
+# }}}
