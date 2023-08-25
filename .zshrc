@@ -14,7 +14,10 @@ export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="clean"
 
 # Install kube-aliases plugin
-git clone https://github.com/Dbz/kube-aliases.git ~/.oh-my-zsh/custom/plugins/kube-aliases
+if [ ! -d ~/.oh-my-zsh/custom/plugins/kube-aliases ]; then
+    echo "kube-aliases needs to be installed"
+    git clone https://github.com/Dbz/kube-aliases.git ~/.oh-my-zsh/custom/plugins/kube-aliases
+fi
 
 plugins=(git kube-aliases dotenv aws)
 
