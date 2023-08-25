@@ -59,22 +59,40 @@ __prepend_path_if_exists "/usr/local/opt/coreutils/libexec/gnuman"
 # }}}
 
 # Brew Installation
+if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
+    if ! command -v brew &> /dev/null
+    then
+        if [ "$(uname -s)" = "Darwin" ]; then
+            echo "brew needs to be installed"
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        elif [ "$(uname -s)" = "Linux" ]; then
+            echo "Installing Linuxbrew"
+            sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+        fi
+        (echo; echo 'eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"') >> ~/.profile
+        eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
+        # Install software from Brew
+        brew bundle
 
-if ! command -v brew &> /dev/null
-then
-    echo "brew needs to be installed"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> ~/.profile
-    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-    # Install software from Brew
-    brew bundle
+        # Install brew fils only if on mac
+        if [ "$(uname -s)" = "Darwin" ]; then
+            brew bundle --file Brewfile.mac
+        fi
 
-    # Install brew fils only if on mac
-    if [ "$(uname -s)" = "Darwin" ]; then
-        brew bundle --file Brewfile.mac
     fi
-
 fi
+
+# Git configuration {{{
+echo "Setting up git..."
+if which code >/dev/null 2>&1 ; then
+  echo "VS Code found. Configuring Git to use it."
+  git config --global merge.tool vscode
+  git config --global mergetool.vscode.cmd 'code --wait --merge $REMOTE $LOCAL $BASE $MERGED'
+  git config --global diff.tool vscode
+  git config --global difftool.vscode.cmd 'code --wait --diff $LOCAL $REMOTE'
+fi
+
+# }}}
 
 # GnuPG configuration {{{
 
