@@ -28,4 +28,4 @@ alias tfp="terraform plan"
 
 ### Trivy Alias
 alias trivyhigh="trivy --quiet --exit-code 0 --severity HIGH,CRITICAL --no-progress"
-alias trivyimage="trivy image --secuirty-checks vuln"
+alias trivyimage="trivy image --security-checks vuln"
