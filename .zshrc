@@ -35,6 +35,7 @@ fi
 # }}}
 
 # krew configuration
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
 if [ ! -f ~/.krew/bin/kubectl-krew ]; then
     echo "krew needs to be installed"
