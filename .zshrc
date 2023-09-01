@@ -42,6 +42,10 @@ if [ ! -f ~/.krew/bin/kubectl-krew ]; then
     ~/.dotfiles/bin/install-krew
 fi
 
+# GPG configuration {{{
+export GPG_TTY=$(tty)
+# }}}
+
 # Basic settings {{{
 
 # History control
