@@ -176,6 +176,30 @@ fi
 
 # }}}
 
+# GO Configuration {{{
+if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
+    GO_VERSION=1.21.1
+    # If brew is installed use brew to download go
+    # Otherwise install go directly
+    if command -v brew &> /dev/null
+    then
+        if ! command -v go &> /dev/null
+        then
+            echo "Installing go"
+            brew install go
+        fi       
+        export GOPATH="${HOMEBREW_PREFIX}/bin/go"
+        export PATH="${PATH}:${GOPATH}/bin"
+    else
+        echo "Installing go"
+        wget https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz
+        sudo tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
+        rm go${GO_VERSION}.linux-amd64.tar.gz
+        export GOPATH="${HOME}/go"
+        export PATH="${PATH}:${GOPATH}/bin"
+    fi
+fi
+
 
 # Load additional configuration {{{
 
