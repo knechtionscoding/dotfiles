@@ -188,16 +188,16 @@ if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
             echo "Installing go"
             brew install go
         fi       
-        export GOPATH="${HOMEBREW_PREFIX}/bin/go"
-        export PATH="${PATH}:${GOPATH}/bin"
     else
         echo "Installing go"
         wget https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz
         sudo tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
         rm go${GO_VERSION}.linux-amd64.tar.gz
-        export GOPATH="${HOME}/go"
-        export PATH="${PATH}:${GOPATH}/bin"
     fi
+    export GOPATH=$HOME/golang
+    export GOROOT=/usr/local/opt/go/libexec
+    export PATH=$PATH:$GOPATH/bin
+    export PATH=$PATH:$GOROOT/bin
 fi
 
 
