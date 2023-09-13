@@ -195,9 +195,7 @@ if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
         rm go${GO_VERSION}.linux-amd64.tar.gz
     fi
     export GOPATH=$HOME/golang
-    export GOROOT=/usr/local/opt/go/libexec
     export PATH=$PATH:$GOPATH/bin
-    export PATH=$PATH:$GOROOT/bin
 fi
 
 
