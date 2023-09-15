@@ -27,5 +27,3 @@
     defaultBranch = main
 [include]
     path = ~/.local/gitconfig
-[gpg]
-	program = /opt/homebrew/bin/gpg

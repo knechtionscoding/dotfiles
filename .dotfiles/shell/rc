@@ -106,6 +106,19 @@ fi
 GPG_TTY=$(tty)
 export GPG_TTY
 
+# If darwin add brew gpg to gitconfig
+if [ "$(uname -s)" = "Darwin" ]; then
+    if command -v brew &> /dev/null
+    then
+        if command -v gpg &> /dev/null
+        then
+            if ! grep -q "gpg.program $(which gpg)" "${HOME}/.gitconfig"; then
+                echo "gpg.program $(which gpg)" >> ~/.gitconfig
+            fi
+        fi
+    fi
+fi
+
 # }}}
 
 # ssh configuration {{{
@@ -197,7 +210,6 @@ if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
     export GOPATH=$HOME/golang
     export PATH=$PATH:$GOPATH/bin
 fi
-
 
 # Load additional configuration {{{
 
