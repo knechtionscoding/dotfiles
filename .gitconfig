@@ -1,6 +1,5 @@
 [user]
     name = Hans Knecht
-    email = hans@anomalo.com
 [core]
     editor = vim
     excludesfile = ~/.gitignore.global

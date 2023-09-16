@@ -68,19 +68,34 @@ if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
         elif [ "$(uname -s)" = "Linux" ]; then
             echo "Installing Linuxbrew"
             sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+
         fi
         (echo; echo 'eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"') >> ~/.profile
         eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
         # Install software from Brew
         brew bundle
 
-        # Install brew fils only if on mac
+        # Install brew files only if on mac
         if [ "$(uname -s)" = "Darwin" ]; then
             brew bundle --file Brewfile.mac
         fi
 
     fi
 fi
+
+# }}}
+
+# PyEnv Configuration {{{
+if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
+    if ! command -v pyenv &> /dev/null
+    then
+        export PYENV_ROOT="$HOME/.pyenv"
+        export PATH="$PYENV_ROOT/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
+    fi
+fi
+
 
 # Git configuration {{{
 
@@ -103,8 +118,16 @@ if [ "$(__stat_mode ~/.gnupg 2>/dev/null)" != "700" ]; then
     chmod 0700 ~/.gnupg
     chmod -R og-rwx ~/.gnupg
 fi
+
 GPG_TTY=$(tty)
 export GPG_TTY
+echo "test" | gpg --clearsign > /dev/null 2>&1
+
+# If not code spaces add to gpg-agent.conf
+if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
+    echo "max-cache-ttl 1800" >> ~/.gnupg/gpg-agent.conf
+    echo "default-cache-ttl 1800" >> ~/.gnupg/gpg-agent.conf
+fi
 
 # If darwin add brew gpg to gitconfig
 if [ "$(uname -s)" = "Darwin" ]; then
@@ -114,6 +137,9 @@ if [ "$(uname -s)" = "Darwin" ]; then
         then
             if ! grep -q "gpg.program $(which gpg)" "${HOME}/.gitconfig"; then
                 echo "gpg.program $(which gpg)" >> ~/.gitconfig
+            fi
+            if ! grep -q "pinentry-program /opt/homebrew/bin/pinentry-mac" "${HOME}/.gnupg/gpg-agent.conf"; then
+                echo "pinentry-program /opt/homebrew/bin/pinentry-mac" >> ~/.gnupg/gpg-agent.conf
             fi
         fi
     fi
@@ -142,8 +168,13 @@ export DOCKER_CONFIG=~/.config/containers
 export HOMEBREW_NO_ENV_HINTS=1
 
 if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-    alias brew86="arch --x86_64 /usr/local/bin/brew"
+    # if amd mac then use brew86
+    if [ "$(uname -s)" = "Darwin" ]; then
+        if [ "$(uname -m)" = "arm64" ]; then
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+            alias brew86="arch --x86_64 /usr/local/bin/brew"
+        fi
+    fi
 fi
 
 # }}}
@@ -154,7 +185,7 @@ if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
   export PYENV_ROOT="$HOME/.pyenv"
   command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
   eval "$(pyenv init -)"
-  eval "$(pyenv virtualenv-init -)"
+  eval "$(pyenv virtualenv-init -)" || true
 fi
 
 # }}}
@@ -189,6 +220,12 @@ fi
 
 # }}}
 
+# TabTab Configuration {{{
+# tabtab source for packages
+# uninstall by removing these lines
+[[ -f ~/.config/tabtab/__tabtab.zsh ]] && . ~/.config/tabtab/__tabtab.zsh || true
+# }}}
+
 # GO Configuration {{{
 if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
     GO_VERSION=1.21.1
@@ -199,7 +236,7 @@ if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
         if ! command -v go &> /dev/null
         then
             echo "Installing go"
-            brew install go
+            brew bundle
         fi       
     else
         echo "Installing go"
@@ -210,6 +247,21 @@ if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
     export GOPATH=$HOME/golang
     export PATH=$PATH:$GOPATH/bin
 fi
+# }}}
+
+# NVM Configuration {{{
+# If NVM configure
+if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
+    if ! command -v nvm &> /dev/null
+    then
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+        [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+    fi       
+fi
+
+
+
 
 # Load additional configuration {{{
 

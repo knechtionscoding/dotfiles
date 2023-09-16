@@ -78,3 +78,7 @@ if [ "$(uname -s)" = "Darwin" ]; then
         compinit -i
     fi
 fi
+
+# }}}
+
+source <(kubectl completion zsh)
