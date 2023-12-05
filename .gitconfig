@@ -8,6 +8,7 @@
     autosetupremote = true
 [pull]
     rebase = true
+	ff = only
 [branch]
     autosetuprebase = always
 [merge]

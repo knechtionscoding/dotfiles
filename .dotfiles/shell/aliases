@@ -11,7 +11,8 @@ alias kgigw="kubectl get gateway.networking.istio.io"
 alias kgidr="kubectl get destinationrule.networking.istio.io"
 alias kgise="kubectl get serviceentry.networking.istio.io"
 alias kbuild="kustomize build . --enable-helm"
-alias kusta="kbuild | kubectl apply -f -"
+alias kusta="kbuild | kubectl apply --server-side -f -"
+alias kdiff="kbuild | k diff -f -"
 
 # System Aliases
 # alias docker="podman"
@@ -30,7 +31,7 @@ alias tfp="terraform plan"
 
 ### Trivy Alias
 alias trivyhigh="trivy --quiet --exit-code 0 --severity HIGH,CRITICAL --no-progress"
-alias trivyimage="trivy image --security-checks vuln"
+alias trivyimage="trivy image --scanners vuln"
 
 ### Random Aliases
 alias ss='kubeseal --controller-namespace sealed-secrets -o yaml'
