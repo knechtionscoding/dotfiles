@@ -82,3 +82,9 @@ fi
 # }}}
 
 source <(kubectl completion zsh)
+
+# asdf configuration
+# If asdf command exists source asdf versions
+if [ -x "$(command -v asdf)" ]; then
+    . /opt/homebrew/opt/asdf/libexec/asdf.sh
+fi

@@ -27,6 +27,7 @@ alias tfat="terraform apply -target"
 alias tfd="terraform destroy"
 alias tfda="terraform destroy -auto-approve"
 alias tfp="terraform plan"
+alias tfi="terraform import"
 
 ### Trivy Alias
 alias trivyhigh="trivy --quiet --exit-code 0 --severity HIGH,CRITICAL --no-progress"
