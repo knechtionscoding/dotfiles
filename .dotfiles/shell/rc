@@ -11,8 +11,7 @@
 
 # Helper functions {{{
 
-__stat_mode()
-{
+__stat_mode() {
     if [ "$(uname -s)" = "Darwin" ]; then
         stat -f '%A' "${@}"
     else
@@ -20,8 +19,7 @@ __stat_mode()
     fi
 }
 
-__stat_mtime()
-{
+__stat_mtime() {
     if [ "$(uname -s)" = "Darwin" ]; then
         stat -f '%m' "${@}"
     else
@@ -38,10 +36,7 @@ HISTSIZE=100000
 
 # }}}
 
-
-
-__prepend_path_if_exists()
-{
+__prepend_path_if_exists() {
     # Remove any existing instances of directory from PATH
     PATH=$(echo "${PATH}" | sed -e 's/:/\n/g' | grep -ve "^${1}\$" | xargs | tr " " ":")
     # Prepend directory to PATH if directory exists
@@ -60,8 +55,7 @@ __prepend_path_if_exists "/usr/local/opt/coreutils/libexec/gnuman"
 
 # Brew Installation
 if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
-    if ! command -v brew &> /dev/null
-    then
+    if ! command -v brew &>/dev/null; then
         if [ "$(uname -s)" = "Darwin" ]; then
             echo "brew needs to be installed"
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -70,7 +64,10 @@ if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
             sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
 
         fi
-        (echo; echo 'eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"') >> ~/.profile
+        (
+            echo
+            echo 'eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"'
+        ) >>~/.profile
         eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
         # Install software from Brew
         brew bundle
@@ -87,8 +84,7 @@ fi
 
 # PyEnv Configuration {{{
 if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
-    if ! command -v pyenv &> /dev/null
-    then
+    if ! command -v pyenv &>/dev/null; then
         export PYENV_ROOT="$HOME/.pyenv"
         export PATH="$PYENV_ROOT/bin:$PATH"
         eval "$(pyenv init --path)"
@@ -96,10 +92,9 @@ if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
     fi
 fi
 
-
 # Git configuration {{{
 
-if which code >/dev/null 2>&1 ; then
+if which code >/dev/null 2>&1; then
     if [[ $(git config --get merge.tool) == false ]]; then
         echo "Setting up git..."
         echo "VS Code found. Configuring Git to use it."
@@ -121,30 +116,28 @@ fi
 
 GPG_TTY=$(tty)
 export GPG_TTY
-echo "test" | gpg --clearsign > /dev/null 2>&1
+echo "test" | gpg --clearsign >/dev/null 2>&1
 
 # If not code spaces add to gpg-agent.conf
 if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
-    echo "max-cache-ttl 1800" >> ~/.gnupg/gpg-agent.conf
-    echo "default-cache-ttl 1800" >> ~/.gnupg/gpg-agent.conf
+    echo "max-cache-ttl 1800" >>~/.gnupg/gpg-agent.conf
+    echo "default-cache-ttl 1800" >>~/.gnupg/gpg-agent.conf
 fi
 
 # If darwin add brew gpg to gitconfig
 if [ "$(uname -s)" = "Darwin" ]; then
-    if command -v brew &> /dev/null
-    then
-        if command -v gpg &> /dev/null
-        then
+    if command -v brew &>/dev/null; then
+        if command -v gpg &>/dev/null; then
             if [ ! -f "${HOME}/.local/gitconfig" ]; then
-            touch ~/.local/gitconfig
+                touch ~/.local/gitconfig
             fi
             if ! grep -q "program = $(which gpg)" "${HOME}/.local/gitconfig"; then
                 echo "[gpg]
     program = $(which gpg)
-                " >> ${HOME}/.local/gitconfig
+                " >>${HOME}/.local/gitconfig
             fi
             if ! grep -q "pinentry-program /opt/homebrew/bin/pinentry-mac" "${HOME}/.gnupg/gpg-agent.conf"; then
-                echo "pinentry-program /opt/homebrew/bin/pinentry-mac" >> ~/.gnupg/gpg-agent.conf
+                echo "pinentry-program /opt/homebrew/bin/pinentry-mac" >>~/.gnupg/gpg-agent.conf
             fi
         fi
     fi
@@ -187,10 +180,10 @@ fi
 # Pyenv configuration {{{
 
 if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
-  export PYENV_ROOT="$HOME/.pyenv"
-  command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-  eval "$(pyenv init -)"
-  eval "$(pyenv virtualenv-init -)" || true
+    export PYENV_ROOT="$HOME/.pyenv"
+    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+    eval "$(pyenv virtualenv-init -)" || true
 fi
 
 # }}}
@@ -215,12 +208,12 @@ if [ "$(uname -s)" = "Darwin" ]; then
     if [ ! -f "${HOME}/.gnupg/gpg-agent.conf" ]; then
         mkdir -p "${HOME}/.gnupg"
         touch "${HOME}/.gnupg/gpg-agent.conf"
-        echo "pinentry-program $(which pinentry-mac)" >> ~/.gnupg/gpg-agent.conf
+        echo "pinentry-program $(which pinentry-mac)" >>~/.gnupg/gpg-agent.conf
     else
         if ! grep -q "pinentry-program $(which pinentry-mac)" "${HOME}/.gnupg/gpg-agent.conf"; then
-            echo "pinentry-program $(which pinentry-mac)" >> ~/.gnupg/gpg-agent.conf
+            echo "pinentry-program $(which pinentry-mac)" >>~/.gnupg/gpg-agent.conf
         fi
-    fi   
+    fi
 fi
 
 # }}}
@@ -236,13 +229,11 @@ if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
     GO_VERSION=1.21.1
     # If brew is installed use brew to download go
     # Otherwise install go directly
-    if command -v brew &> /dev/null
-    then
-        if ! command -v go &> /dev/null
-        then
+    if command -v brew &>/dev/null; then
+        if ! command -v go &>/dev/null; then
             echo "Installing go"
             brew bundle
-        fi       
+        fi
     else
         echo "Installing go"
         wget https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz
@@ -257,21 +248,16 @@ fi
 # NVM Configuration {{{
 # If NVM configure
 if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
-    if ! command -v nvm &> /dev/null
-    then
+    if ! command -v nvm &>/dev/null; then
         export NVM_DIR="$HOME/.nvm"
-        [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
-        [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
-    fi       
+        [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"                                       # This loads nvm
+        [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
+    fi
 fi
-
-
-
 
 # Load additional configuration {{{
 
-__source_if_exists()
-{
+__source_if_exists() {
     if [ -f "${1}" ]; then
         . "${1}"
     fi
