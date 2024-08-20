@@ -48,22 +48,16 @@ __prepend_path_if_exists "${HOME}/.dotfiles/bin"
 __prepend_path_if_exists "${HOME}/.local/bin"
 __prepend_path_if_exists "${HOME}/.ruby/bin"
 __prepend_path_if_exists "${HOME}/bin"
-__prepend_path_if_exists "/usr/local/opt/coreutils/libexec/gnubin"
-__prepend_path_if_exists "/usr/local/opt/coreutils/libexec/gnuman"
+__prepend_path_if_exists "${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnubin"
+__prepend_path_if_exists "${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnuman"
 
 # }}}
 
 # Brew Installation
 if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
     if ! command -v brew &>/dev/null; then
-        if [ "$(uname -s)" = "Darwin" ]; then
-            echo "brew needs to be installed"
-            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        elif [ "$(uname -s)" = "Linux" ]; then
-            echo "Installing Linuxbrew"
-            sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
-
-        fi
+        echo "brew needs to be installed"
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         (
             echo
             echo 'eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"'
@@ -250,8 +244,8 @@ fi
 if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
     if ! command -v nvm &>/dev/null; then
         export NVM_DIR="$HOME/.nvm"
-        [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"                                       # This loads nvm
-        [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
+        [ -s "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh" ] && . "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh"                                       # This loads nvm
+        [ -s "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" ] && . "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
     fi
 fi
 

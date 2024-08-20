@@ -104,12 +104,23 @@ source <(kubectl completion zsh)
 # asdf configuration
 # If asdf command exists source asdf versions
 if [ -x "$(command -v asdf)" ]; then
-    . /opt/homebrew/opt/asdf/libexec/asdf.sh
+    . ${HOMEBREW_PREFIX}/opt/asdf/libexec/asdf.sh
 fi
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"                                       # This loads nvm
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
+# Check if mac
+if [ "$(uname -s)" = "Darwin" ]; then
+    # Add Docker Desktop for Mac (docker)
+    export PATH="$PATH:/Applications/Docker.app/Contents/Resources/bin/"
+fi
 
-# Add FZF
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh"                                       # This loads nvm
+[ -s "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
 eval "$(fzf --zsh)"
+eval "$($(which brew) shellenv)"
+alias brew86="arch --x86_64 /usr/local/bin/brew"
+eval "$(pyenv init --path)"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+export STAN_BACKEND=CMDSTANPY
