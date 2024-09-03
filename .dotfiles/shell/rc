@@ -61,9 +61,8 @@ if ! command -v brew &>/dev/null; then
         echo
         echo 'eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"'
     ) >>~/.profile
+    source ~/.profile
     eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
-    (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> /root/.bashrc
-    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
     # Install software from Brew
     brew bundle
 
