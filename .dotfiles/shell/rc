@@ -56,20 +56,38 @@ __prepend_path_if_exists "${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnuman"
 # Brew Installation
 if ! command -v brew &>/dev/null; then
     echo "brew needs to be installed"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    (
-        echo
-        echo 'eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"'
-    ) >>~/.profile
-    source ~/.profile
-    eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
-    # Install software from Brew
-    brew bundle
+    # if in codespaces put in .bashrc
+    if [ -n "${GITHUB_CODESPACE_TOKEN}" ] || [ -n "${CODESPACES}" ]; then
+        echo "Installing brew"
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        (
+            echo
+            echo >> ~/.bashrc
+            echo 'eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"' >> ~/.bashrc
+            eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
+        ) >>~/.bashrc
+        source ~/.bashrc
+        eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
+        # Install software from Brew
+        brew bundle
+    else
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        (
+            echo
+            echo 'eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"'
+        ) >>~/.profile
+        source ~/.profile
+        eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
+        # Install software from Brew
+        brew bundle
 
-    # Install brew files only if on mac
-    if [ "$(uname -s)" = "Darwin" ]; then
-        brew bundle --file Brewfile.mac
+        # Install brew files only if on mac
+        if [ "$(uname -s)" = "Darwin" ]; then
+            brew bundle --file Brewfile.mac
+        fi
+
     fi
+
 
 fi
 
