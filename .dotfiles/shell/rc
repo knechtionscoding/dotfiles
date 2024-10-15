@@ -68,8 +68,6 @@ if ! command -v brew &>/dev/null; then
         ) >>~/.bashrc
         source ~/.bashrc
         eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
-        # Install software from Brew
-        brew bundle
     else
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         (
@@ -79,8 +77,12 @@ if ! command -v brew &>/dev/null; then
         source ~/.profile
         eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
         # Install software from Brew
-        brew bundle
-
+        # if ~/.config/Brewfile exists skip brew install
+        if [ ! -f ~/.config/Brewfile ]; then
+            brew bundle
+            touch ~/.config/Brewfile
+        fi
+        
         # Install brew files only if on mac
         if [ "$(uname -s)" = "Darwin" ]; then
             brew bundle --file Brewfile.mac
