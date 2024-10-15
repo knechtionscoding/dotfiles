@@ -119,8 +119,16 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
 eval "$(fzf --zsh)"
 eval "$($(which brew) shellenv)"
-alias brew86="arch --x86_64 /usr/local/bin/brew"
-eval "$(pyenv init --path)"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
+# If arm then alias brew to use x86_64
+if [ "$(uname -m)" = "arm64" ]; then
+    alias brew="arch --x86_64 /usr/local/bin/brew"
+fi
+# if pyenv is installed then configure it
+if [ -x "$(command -v pyenv)" ]; then
+    eval "$(pyenv init --path)"
+    eval "$(pyenv init -)"
+    eval "$(pyenv virtualenv-init -)"
+fi
+
 export STAN_BACKEND=CMDSTANPY
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
