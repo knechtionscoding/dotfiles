@@ -117,8 +117,21 @@ fi
 export NVM_DIR="$HOME/.nvm"
 [ -s "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh"                                       # This loads nvm
 [ -s "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
-eval "$(fzf --zsh)"
-eval "$($(which brew) shellenv)"
+# if fzf isn't installed install it
+if [ ! -f "$(which fzf)" ]; then
+    echo "fzf needs to be installed"
+    # If in debian/ubuntu then use apt
+    if [ -x "$(command -v apt)" ]; then
+        sudo apt install fzf
+    fi
+    # If in mac then use brew
+    if [ "$(uname -s)" = "Darwin" ]; then
+        [ -x "$(command -v brew)" ] && brew install fzf
+    fi
+fi
+[ -f "$(which fzf)" ] && eval "$(fzf --zsh)"
+# If brew is installed then configure it
+[ -f "$(which brew)" ] && eval "$($(which brew) shellenv)"
 # If arm then alias brew to use x86_64
 if [ "$(uname -m)" = "arm64" ]; then
     alias brew="arch --x86_64 /usr/local/bin/brew"

@@ -54,21 +54,11 @@ __prepend_path_if_exists "${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnuman"
 # }}}
 
 # Brew Installation
-if ! command -v brew &>/dev/null; then
-    echo "brew needs to be installed"
-    # if in codespaces put in .bashrc
-    if [ -n "${GITHUB_CODESPACE_TOKEN}" ] || [ -n "${CODESPACES}" ]; then
-        echo "Installing brew"
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        (
-            echo
-            echo >> ~/.bashrc
-            echo 'eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"' >> ~/.bashrc
-            eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
-        ) >>~/.bashrc
-        source ~/.bashrc
-        eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
-    else
+# If in codespaces or github codespaces skip brew installation
+if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
+
+    if ! command -v brew &>/dev/null; then
+        echo "brew needs to be installed"
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         (
             echo
@@ -87,12 +77,8 @@ if ! command -v brew &>/dev/null; then
         if [ "$(uname -s)" = "Darwin" ]; then
             brew bundle --file Brewfile.mac
         fi
-
     fi
-
-
 fi
-
 # }}}
 
 # PyEnv Configuration {{{
