@@ -4,7 +4,7 @@
 
 ## K8s Aliases
 alias ktail="stern"
-alias krun="kubectl run hans-shell --rm -it --image ubuntu:devel -- bash"
+alias krun="kubectl run hans-shell --rm -it --image ubuntu:devel -c hans-shell --annotations='linkerd.io/inject=false' -- bash"
 alias kattach="kubectl attach hans-shell -c hans-shell -i -t"
 alias kgivs="kubectl get virtualservice.networking.istio.io"
 alias kgigw="kubectl get gateway.networking.istio.io"
