@@ -19,7 +19,7 @@ if [ ! -d ~/.oh-my-zsh/custom/plugins/kube-aliases ]; then
     git clone https://github.com/Dbz/kube-aliases.git ~/.oh-my-zsh/custom/plugins/kube-aliases
 fi
 
-plugins=(git kube-aliases dotenv aws fzf)
+plugins=(git kube-aliases dotenv aws fzf terraform)
 
 source $ZSH/oh-my-zsh.sh
 
