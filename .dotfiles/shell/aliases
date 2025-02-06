@@ -10,7 +10,7 @@ alias kgivs="kubectl get virtualservice.networking.istio.io"
 alias kgigw="kubectl get gateway.networking.istio.io"
 alias kgidr="kubectl get destinationrule.networking.istio.io"
 alias kgise="kubectl get serviceentry.networking.istio.io"
-alias kbuild="kustomize build . --enable-helm"
+alias kbuild="kustomize build . --enable-helm --load-restrictor LoadRestrictionsNone"
 alias kusta="kbuild | kubectl apply -f -"
 alias kdiff="kbuild | k diff -f -"
 
