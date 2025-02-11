@@ -14,6 +14,8 @@ alias kbuild="kustomize build . --enable-helm --load-restrictor LoadRestrictions
 alias kusta="kbuild | kubectl apply -f -"
 alias kdiff="kbuild | k diff -f -"
 
+alias kcreate="kustomize create --autodetect --recursive ."
+
 # System Aliases
 # alias docker="podman"
 
