@@ -3,23 +3,41 @@
 [core]
     editor = vim
     excludesfile = ~/.gitignore.global
+    fsmonitor = true
+[tag]
+    sort = version:refname
+[init]
+        defaultBranch = main
 [push]
     default = upstream
     autosetupremote = true
+
+[fetch]
+        prune = true
+        pruneTags = true
+        all = true
+
+[rerere]
+        enabled = true
+        autoupdate = true
+
 [pull]
     rebase = true
 	ff = only
 [branch]
     autosetuprebase = always
+    sort = -committerdate
 [merge]
-    conflictstyle = diff3
+    conflictstyle = zdiff3 
 [log]
     date = local
 [advice]
     statusHints = false
 [diff]
-    mnemonicprefix = true
-    renames = copies
+    algorithm = histogram
+    colorMoved = plain
+    mnemonicPrefix = true
+    renames = true
 [commit]
     verbose = true
     gpgsign = true
@@ -27,3 +45,19 @@
     defaultBranch = main
 [include]
     path = ~/.local/gitconfig
+
+[help]
+        autocorrect = prompt
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[git-town]
+	ship-delete-tracking-branch = true
+
+[rebase]
+        autoSquash = true
+        autoStash = true
+        updateRefs = true
