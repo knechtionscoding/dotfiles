@@ -146,10 +146,10 @@ fi
 
 # ssh configuration {{{
 
-#if [ -z "${SSH_CONNECTION}" ]; then
-#    SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
-#    export SSH_AUTH_SOCK
-#fi
+if [ -z "${SSH_CONNECTION}" ]; then
+    SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+    export SSH_AUTH_SOCK
+fi
 
 # }}}
 
