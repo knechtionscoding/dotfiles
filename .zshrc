@@ -168,3 +168,6 @@ alias brew86="arch --x86_64 /usr/local/bin/brew"
 export TELEPORT_AUTH=google
 export TELEPORT_PROXY=anomalo.teleport.sh:443
 export TELEPORT_USER=hans@anomalo.com
+
+export ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
+export CLAUDE_CODE_USE_BEDROCK=1
