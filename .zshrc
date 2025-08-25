@@ -21,7 +21,21 @@ fi
 
 plugins=(git kube-aliases dotenv aws fzf terraform)
 
-source $ZSH/oh-my-zsh.sh
+shell=$(ps -p $$ -o comm=)
+
+case "$shell" in
+  /bin/zsh)
+    echo "Running under zsh"
+    source $ZSH/oh-my-zsh.sh
+    ;;
+  bash)
+    echo "Running under bash"
+    ;;
+  *)
+    echo "Unknown or unsupported shell: $shell"
+    ;;
+esac
+
 
 [ -f ~/.dotfiles/shell/rc ] && source ~/.dotfiles/shell/rc
 
@@ -145,3 +159,12 @@ fi
 
 export STAN_BACKEND=CMDSTANPY
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+
+. "$HOME/.local/bin/env"
+eval "$(/opt/homebrew/bin/brew shellenv)"
+alias brew86="arch --x86_64 /usr/local/bin/brew"
+
+
+export TELEPORT_AUTH=google
+export TELEPORT_PROXY=anomalo.teleport.sh:443
+export TELEPORT_USER=hans@anomalo.com

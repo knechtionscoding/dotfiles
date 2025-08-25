@@ -124,3 +124,5 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 export PATH=/Users/hknecht/.groundcover/bin:${PATH}
+
+. "$HOME/.local/bin/env"

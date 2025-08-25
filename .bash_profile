@@ -5,3 +5,5 @@ export PATH="$PATH:/Users/hknecht/.asdf/shims:/opt/homebrew/opt/asdf/libexec/bin
 if command -v pyenv 1>/dev/null 2>&1; then
     eval "$(pyenv init -)"
 fi
+
+. "$HOME/.local/bin/env"

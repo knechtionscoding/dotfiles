@@ -44,3 +44,9 @@ alias make="gmake"
 kgpn() {
     kubectl get pods --all-namespaces -o wide --field-selector spec.nodeName=$1
 }
+
+
+alias gimme-creds="tsh svid issue --output ~/.roles-anywhere --svid-ttl 12h /svc/codespaces"
+alias gimme-admin-creds="tsh svid issue --output ~/.roles-anywhere-admin --svid-ttl 12h /role/administrator"
+alias gimme-sandbox-creds="tsh svid issue --output ~/.roles-anywhere-sandbox --svid-ttl 12h /cloud/aws-sandbox"
+alias gimme-bd-creds="tsh svid issue --output ~/.roles-anywhere-bd --svid-ttl 12h /role/business-development"
