@@ -1,5 +1,3 @@
-#!/bin/zsh
-
 # Interactive shell detection {{{
 
 # If either of these are true, the shell is non-interactive.

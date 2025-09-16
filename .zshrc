@@ -118,7 +118,9 @@ source <(kubectl completion zsh)
 # asdf configuration
 # If asdf command exists source asdf versions
 if [ -x "$(command -v asdf)" ]; then
-    . ${HOMEBREW_PREFIX}/opt/asdf/libexec/asdf.sh
+    export PATH="$HOME/bin:$PATH"
+    export ASDF_DATA_DIR="$HOME/.asdf"
+    export PATH="$ASDF_DATA_DIR/shims:$PATH"
 fi
 
 # Check if mac
@@ -160,8 +162,12 @@ fi
 export STAN_BACKEND=CMDSTANPY
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
 
-. "$HOME/.local/bin/env"
-eval "$(/opt/homebrew/bin/brew shellenv)"
+if [ -f "$HOME/.local/bin/env" ]; then
+  . "$HOME/.local/bin/env"
+fi
+if [ -x /opt/homebrew/bin/brew ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 alias brew86="arch --x86_64 /usr/local/bin/brew"
 
 
