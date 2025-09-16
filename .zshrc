@@ -27,12 +27,15 @@ fi
 
 plugins=(git kube-aliases dotenv aws fzf terraform)
 
-shell=$(ps -p $$ -o comm=)
+# Normalize the shell name: strip leading path
+shell=$(ps -p "$$" -o comm=)
+shell=$(basename "$shell")
 
 case "$shell" in
   zsh)
     echo "Running under zsh"
-    source $ZSH/oh-my-zsh.sh
+    # make sure $ZSH is set or guard against it
+    [ -n "$ZSH" ] && . "$ZSH/oh-my-zsh.sh"
     ;;
   bash)
     echo "Running under bash"
