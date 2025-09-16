@@ -2,6 +2,12 @@
 
 [ -f /etc/zshrc ] && source /etc/zshrc
 
+export TELEPORT_AUTH=google
+export TELEPORT_PROXY=anomalo.teleport.sh:443
+export TELEPORT_USER=hans@anomalo.com
+
+export ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
+export CLAUDE_CODE_USE_BEDROCK=1
 export ZSH_DISABLE_COMPFIX=true
 
 # Path to your oh-my-zsh installation.
@@ -11,7 +17,7 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="clean"
+export ZSH_THEME="clean"
 
 # Install kube-aliases plugin
 if [ ! -d ~/.oh-my-zsh/custom/plugins/kube-aliases ]; then
@@ -103,13 +109,13 @@ fi
 # }}}
 
 # Enable additional zsh completions on OS X
-if [ "$(uname -s)" = "Darwin" ]; then
-    if type brew &>/dev/null; then
-        FPATH="$(brew --prefix)/share/zsh-completions:${FPATH}"
-        autoload -Uz compinit
-        compinit -i
-    fi
-fi
+# if [ "$(uname -s)" = "Darwin" ]; then
+#     if type brew &>/dev/null; then
+#         FPATH="$(brew --prefix)/share/zsh-completions:${FPATH}"
+#         autoload -Uz compinit
+#         compinit -i
+#     fi
+# fi
 
 # }}}
 
@@ -117,9 +123,9 @@ source <(kubectl completion zsh)
 
 # asdf configuration
 # If asdf command exists source asdf versions
-if [ -x "$(command -v asdf)" ]; then
-    . ${HOMEBREW_PREFIX}/opt/asdf/libexec/asdf.sh
-fi
+# if [ -x "$(command -v asdf)" ]; then
+#     . ${HOMEBREW_PREFIX}/opt/asdf/libexec/asdf.sh
+# fi
 
 # Check if mac
 if [ "$(uname -s)" = "Darwin" ]; then
@@ -131,19 +137,6 @@ fi
 export NVM_DIR="$HOME/.nvm"
 [ -s "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh"                                       # This loads nvm
 [ -s "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
-# if fzf isn't installed install it
-if [ ! -f "$(which fzf)" ]; then
-    echo "fzf needs to be installed"
-    # If in debian/ubuntu then use apt
-    if [ -x "$(command -v apt)" ]; then
-        sudo apt install fzf
-    fi
-    # If in mac then use brew
-    if [ "$(uname -s)" = "Darwin" ]; then
-        [ -x "$(command -v brew)" ] && brew install fzf
-    fi
-fi
-[ -f "$(which fzf)" ] && eval "$(fzf --zsh)"
 # If brew is installed then configure it
 [ -f "$(which brew)" ] && eval "$($(which brew) shellenv)"
 # If arm then alias brew to use x86_64
@@ -160,14 +153,12 @@ fi
 export STAN_BACKEND=CMDSTANPY
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
 
-. "$HOME/.local/bin/env"
-eval "$(/opt/homebrew/bin/brew shellenv)"
+if [ -f "$HOME/.local/bin/env" ]; then
+  . "$HOME/.local/bin/env"
+fi
+if [ -x /opt/homebrew/bin/brew ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 alias brew86="arch --x86_64 /usr/local/bin/brew"
 
 
-export TELEPORT_AUTH=google
-export TELEPORT_PROXY=anomalo.teleport.sh:443
-export TELEPORT_USER=hans@anomalo.com
-
-export ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
-export CLAUDE_CODE_USE_BEDROCK=1
