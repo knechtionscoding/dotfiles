@@ -46,7 +46,23 @@ kgpn() {
 }
 
 
-alias gimme-creds="tsh svid issue --output ~/.roles-anywhere --svid-ttl 12h /svc/codespaces"
-alias gimme-admin-creds="tsh svid issue --output ~/.roles-anywhere-admin --svid-ttl 12h /role/administrator"
-alias gimme-sandbox-creds="tsh svid issue --output ~/.roles-anywhere-sandbox --svid-ttl 12h /cloud/aws-sandbox"
-alias gimme-bd-creds="tsh svid issue --output ~/.roles-anywhere-bd --svid-ttl 12h /role/business-development"
+alias_exists() {
+  alias "$1" >/dev/null 2>&1
+}
+
+# conditionally define aliases
+if ! alias_exists gimme-creds; then
+  alias gimme-creds="tsh svid issue --output ~/.roles-anywhere --svid-ttl 12h /svc/codespaces"
+fi
+
+if ! alias_exists gimme-admin-creds; then
+  alias gimme-admin-creds="tsh svid issue --output ~/.roles-anywhere-admin --svid-ttl 12h /role/administrator"
+fi
+
+if ! alias_exists gimme-sandbox-creds; then
+  alias gimme-sandbox-creds="tsh svid issue --output ~/.roles-anywhere-sandbox --svid-ttl 12h /cloud/aws-sandbox"
+fi
+
+if ! alias_exists gimme-bd-creds; then
+  alias gimme-bd-creds="tsh svid issue --output ~/.roles-anywhere-bd --svid-ttl 12h /role/business-development"
+fi
