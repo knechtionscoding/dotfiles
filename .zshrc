@@ -30,7 +30,7 @@ plugins=(git kube-aliases dotenv aws fzf terraform)
 shell=$(ps -p $$ -o comm=)
 
 case "$shell" in
-  /bin/zsh)
+  zsh)
     echo "Running under zsh"
     source $ZSH/oh-my-zsh.sh
     ;;
