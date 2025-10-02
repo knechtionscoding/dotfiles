@@ -57,6 +57,22 @@ fi
 
 # }}}
 
+# Install fzf
+# If Darwin use brew install
+# Otherwise use apt
+if [ "$(uname -s)" = "Darwin" ]; then
+    if command -v brew &>/dev/null; then
+        brew install fzf
+    else
+      echo "Install Brew prior to installing fzf"
+    fi
+else
+  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+  ~/.fzf/install --completion --key-bindings
+fi
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
 # krew configuration
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
