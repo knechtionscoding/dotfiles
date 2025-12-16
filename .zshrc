@@ -72,8 +72,14 @@ if [ "$(uname -s)" = "Darwin" ]; then
       echo "Install Brew prior to installing fzf"
     fi
 else
-  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-  ~/.fzf/install --completion --key-bindings
+  if command -v fzf &>/dev/null; then
+      echo "fzf is already installed"
+  else
+      echo "Installing fzf via git"
+      git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+      ~/.fzf/install --completion --key-bindings
+  fi
+
 fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
