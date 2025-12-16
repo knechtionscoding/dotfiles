@@ -62,6 +62,10 @@ fi
 # Otherwise use apt
 if [ "$(uname -s)" = "Darwin" ]; then
     if command -v brew &>/dev/null; then
+        if command -v fzf &>/dev/null; then
+            echo "fzf is already installed"
+            exit 0
+        fi
         brew install fzf
     else
       echo "Install Brew prior to installing fzf"
@@ -183,3 +187,6 @@ fi
 alias brew86="arch --x86_64 /usr/local/bin/brew"
 
 
+export ASDF_DATA_DIR='/Users/hknecht/.asdf'
+export PATH='/shims:/opt/homebrew/bin:/opt/homebrew/sbin:/opt/homebrew/opt/libpq/bin:/Users/hknecht/.nvm/versions/node/v20.19.2/bin:/Users/hknecht/.krew/bin:/opt/homebrew/Cellar/pyenv-virtualenv/1.2.4/shims:/Users/hknecht/.pyenv/shims:/opt/homebrew/opt/coreutils/libexec/gnuman:/opt/homebrew/opt/coreutils/libexec/gnubin:/Users/hknecht/.local/bin:/Users/hknecht/.dotfiles/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pmk/env/global/bin:/usr/local/MacGPG2/bin:/Users/hknecht/golang/bin:/Applications/Docker.app/Contents/Resources/bin/:/Users/hknecht/.vscode/extensions/ms-python.debugpy-2025.14.1-darwin-arm64/bundled/scripts/noConfigScripts'
+export PATH="/usr/local/opt/helm@3/bin:$PATH"
