@@ -64,9 +64,10 @@ if [ "$(uname -s)" = "Darwin" ]; then
     if command -v brew &>/dev/null; then
         if command -v fzf &>/dev/null; then
             echo "fzf is already installed"
-            exit 0
+        else
+            echo "Installing fzf via brew"
+            brew install fzf
         fi
-        brew install fzf
     else
       echo "Install Brew prior to installing fzf"
     fi
