@@ -11,6 +11,7 @@ case "$(uname -s 2>/dev/null || echo Linux)" in
     export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
     export ASDF_DATA_DIR="$HOME/.asdf"
     export PATH="$ASDF_DATA_DIR/shims:$PATH"
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh)"
     ;;
 esac
 
