@@ -14,16 +14,15 @@ case "$(uname -s 2>/dev/null || echo Linux)" in
     ;;
 esac
 
+[ -f /etc/zshrc ] && source /etc/zshrc
+
 export TELEPORT_AUTH=google
 export TELEPORT_PROXY=anomalo.teleport.sh:443
 export TELEPORT_USER=hans@anomalo.com
+
 export ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
 export CLAUDE_CODE_USE_BEDROCK=1
 export ZSH_DISABLE_COMPFIX=true
-
-[ -f /etc/zshrc ] && source /etc/zshrc
-
-
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -41,7 +40,7 @@ if [ ! -d ~/.oh-my-zsh/custom/plugins/kube-aliases ]; then
     git clone https://github.com/Dbz/kube-aliases.git ~/.oh-my-zsh/custom/plugins/kube-aliases
 fi
 
-plugins=(git kube-aliases dotenv aws fzf terraform)
+plugins=(git kube-aliases dotenv aws terraform)
 
 # Source oh-my-zsh (zsh only)
 if [ -n "$ZSH_VERSION" ]; then
@@ -61,14 +60,19 @@ if [ "$(uname -s)" = "Darwin" ]; then
         echo "Install Brew prior to installing fzf"
     fi
 else
-    if ! command -v fzf &>/dev/null; then
-        echo "Installing fzf via git"
-        git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-        ~/.fzf/install --completion --key-bindings
+    if ! command -v fzf &>/dev/null && [ ! -x ~/.fzf/bin/fzf ]; then
+        if [ ! -d ~/.fzf ]; then
+            echo "Installing fzf via git"
+            git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+        fi
+        ~/.fzf/install --completion --key-bindings --no-update-rc --bin
     fi
 fi
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# Source fzf zsh integration (bypass type -t bashism by sourcing directly)
+if [ -f ~/.fzf.zsh ]; then
+    source ~/.fzf.zsh 2>/dev/null
+fi
 
 # krew configuration
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
@@ -78,8 +82,8 @@ if [ ! -f ~/.krew/bin/kubectl-krew ]; then
     ~/.dotfiles/bin/install-krew
 fi
 
-# GPG configuration
-export GPG_TTY=$(tty)
+# GPG configuration (only when a TTY is available)
+[ -t 0 ] && export GPG_TTY=$(tty)
 
 # History control {{{
 HISTFILE="$HOME/.zsh_history"
