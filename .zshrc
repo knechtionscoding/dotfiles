@@ -14,15 +14,16 @@ case "$(uname -s 2>/dev/null || echo Linux)" in
     ;;
 esac
 
-[ -f /etc/zshrc ] && source /etc/zshrc
-
 export TELEPORT_AUTH=google
 export TELEPORT_PROXY=anomalo.teleport.sh:443
 export TELEPORT_USER=hans@anomalo.com
-
 export ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
 export CLAUDE_CODE_USE_BEDROCK=1
 export ZSH_DISABLE_COMPFIX=true
+
+[ -f /etc/zshrc ] && source /etc/zshrc
+
+
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
