@@ -1,8 +1,6 @@
 #!/bin/zsh
 
-[ -f /etc/zshrc ] && source /etc/zshrc
-
-# Bootstrap PATH early so basic utils are available on Linux
+# Bootstrap PATH before anything else, including /etc/zshrc which may clobber it
 case "$(uname -s 2>/dev/null || echo Linux)" in
   Darwin)
     export ASDF_DATA_DIR='/Users/hknecht/.asdf'
@@ -15,6 +13,8 @@ case "$(uname -s 2>/dev/null || echo Linux)" in
     export PATH="$ASDF_DATA_DIR/shims:$PATH"
     ;;
 esac
+
+[ -f /etc/zshrc ] && source /etc/zshrc
 
 export TELEPORT_AUTH=google
 export TELEPORT_PROXY=anomalo.teleport.sh:443
