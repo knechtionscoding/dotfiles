@@ -113,14 +113,16 @@ if [ "$(__stat_mode ~/.gnupg 2>/dev/null)" != "700" ]; then
     chmod -R og-rwx ~/.gnupg
 fi
 
-GPG_TTY=$(tty)
-export GPG_TTY
+[ -t 0 ] && GPG_TTY=$(tty) && export GPG_TTY
+
 echo "test" | gpg --clearsign >/dev/null 2>&1
 
 # If not code spaces add to gpg-agent.conf
 if [ ! -n "${GITHUB_CODESPACE_TOKEN}" ] && [ ! -n "${CODESPACES}" ]; then
-    echo "max-cache-ttl 1800" >>~/.gnupg/gpg-agent.conf
-    echo "default-cache-ttl 1800" >>~/.gnupg/gpg-agent.conf
+    if ! grep -q "max-cache-ttl 1800" ~/.gnupg/gpg-agent.conf 2>/dev/null; then
+        echo "max-cache-ttl 1800" >>~/.gnupg/gpg-agent.conf
+        echo "default-cache-ttl 1800" >>~/.gnupg/gpg-agent.conf
+    fi
 fi
 
 # If darwin add brew gpg to gitconfig
