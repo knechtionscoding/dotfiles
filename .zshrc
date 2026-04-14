@@ -145,9 +145,10 @@ auto_activate_venv() {
         dir="$(dirname "$dir")"
     done
     [[ -n "$VIRTUAL_ENV" ]] && deactivate
-}Expand commentComment on lines R106 to R117Resolved
+}
 autoload -Uz add-zsh-hook
 add-zsh-hook chpwd auto_activate_venv
 auto_activate_venv
 
 export PATH="$HOME/.local/bin:$PATH"
+source ~/.safe-chain/scripts/init-posix.sh # Safe-chain bash initialization script
