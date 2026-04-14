@@ -17,29 +17,35 @@ esac
 
 [ -f /etc/zshrc ] && source /etc/zshrc
 
+# Dotfiles data directory (used by dotfiles-first-run sentinel)
+export DOTFILES_DATA="${HOME}/.local/share/dotfiles"
+mkdir -p "${DOTFILES_DATA}"
+
 export TELEPORT_AUTH=google
 export TELEPORT_PROXY=anomalo.teleport.sh:443
 export TELEPORT_USER=hans@anomalo.com
 
-export ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
-export CLAUDE_CODE_USE_BEDROCK=1
+export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
+export AWS_REGION="us-west-2"
+export CLAUDE_CODE_USE_BEDROCK="1"
+export ANTHROPIC_DEFAULT_HAIKU_MODEL=arn:aws:bedrock:us-west-2:580663733917:application-inference-profile/wsoiwar1qd41
+export ANTHROPIC_DEFAULT_HAIKU_MODEL_NAME="Haiku 4.5 via Bedrock"
+export ANTHROPIC_DEFAULT_HAIKU_MODEL_DESCRIPTION="Haiku 4.5 routed through a Bedrock inference profile"
+export ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES="effort,thinking"
+export ANTHROPIC_DEFAULT_SONNET_MODEL=arn:aws:bedrock:us-west-2:580663733917:application-inference-profile/chyv1tlre2il
+export ANTHROPIC_DEFAULT_SONNET_MODEL_NAME="Sonnet 4.6 via Bedrock"
+export ANTHROPIC_DEFAULT_SONNET_MODEL_DESCRIPTION="Sonnet 4.6 routed through a Bedrock inference profile"
+export ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES="effort,thinking,adaptive_thinking,interleaved_thinking"
+export ANTHROPIC_DEFAULT_OPUS_MODEL=arn:aws:bedrock:us-west-2:580663733917:application-inference-profile/8a560zije806
+export ANTHROPIC_DEFAULT_OPUS_MODEL_NAME="Opus 4.6 via Bedrock"
+export ANTHROPIC_DEFAULT_OPUS_MODEL_DESCRIPTION="Opus 4.6 routed through a Bedrock inference profile"
+export ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES="effort,max_effort,thinking,adaptive_thinking,interleaved_thinking"
+
 export ZSH_DISABLE_COMPFIX=true
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 export ZSH_THEME="clean"
-
-# Install oh-my-zsh if missing
-if [ ! -d ~/.oh-my-zsh ]; then
-    echo "oh-my-zsh needs to be installed"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --keep-zshrc
-fi
-
-# Install kube-aliases plugin if missing
-if [ ! -d ~/.oh-my-zsh/custom/plugins/kube-aliases ]; then
-    echo "Installing kube-aliases plugin"
-    git clone https://github.com/Dbz/kube-aliases.git ~/.oh-my-zsh/custom/plugins/kube-aliases
-fi
 
 plugins=(git kube-aliases dotenv aws terraform)
 
@@ -50,26 +56,6 @@ fi
 
 [ -f ~/.dotfiles/shell/rc ] && source ~/.dotfiles/shell/rc
 
-# Install fzf if missing
-if [ "$(uname -s)" = "Darwin" ]; then
-    if command -v brew &>/dev/null; then
-        if ! command -v fzf &>/dev/null; then
-            echo "Installing fzf via brew"
-            brew install fzf
-        fi
-    else
-        echo "Install Brew prior to installing fzf"
-    fi
-else
-    if ! command -v fzf &>/dev/null && [ ! -x ~/.fzf/bin/fzf ]; then
-        if [ ! -d ~/.fzf ]; then
-            echo "Installing fzf via git"
-            git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-        fi
-        ~/.fzf/install --completion --key-bindings --no-update-rc --bin
-    fi
-fi
-
 # Source fzf zsh integration (bypass type -t bashism by sourcing directly)
 if [ -f ~/.fzf.zsh ]; then
     source ~/.fzf.zsh 2>/dev/null
@@ -77,11 +63,6 @@ fi
 
 # krew configuration
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-
-if [ ! -f ~/.krew/bin/kubectl-krew ]; then
-    echo "krew needs to be installed"
-    ~/.dotfiles/bin/install-krew
-fi
 
 # GPG configuration (only when a TTY is available)
 [ -t 0 ] && export GPG_TTY=$(tty)
@@ -143,21 +124,6 @@ if [ "$(uname -s)" = "Darwin" ]; then
     [ -s "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh" ] && source "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh"
     [ -s "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" ] && source "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm"
 
-    # brew shellenv
-    [ -x "$(which brew)" ] && eval "$($(which brew) shellenv)"
-    [ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
-
-    # Rosetta brew alias (arm64 only)
-    [ "$(uname -m)" = "arm64" ] && alias brew="arch --x86_64 /usr/local/bin/brew"
-    alias brew86="arch --x86_64 /usr/local/bin/brew"
-
-    # pyenv
-    if command -v pyenv &>/dev/null; then
-        eval "$(pyenv init --path)"
-        eval "$(pyenv init -)"
-        eval "$(pyenv virtualenv-init -)"
-    fi
-
     export STAN_BACKEND=CMDSTANPY
     export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
 fi
@@ -166,3 +132,22 @@ fi
 if [ -f "$HOME/.local/bin/env" ]; then
     source "$HOME/.local/bin/env"
 fi
+
+
+auto_activate_venv() {
+    local dir="$PWD"
+    while [[ "$dir" != "/" ]]; do
+        if [[ -f "$dir/.venv/bin/activate" ]]; then
+            [[ "$VIRTUAL_ENV" == "$dir/.venv" ]] && return
+            source "$dir/.venv/bin/activate"
+            return
+        fi
+        dir="$(dirname "$dir")"
+    done
+    [[ -n "$VIRTUAL_ENV" ]] && deactivate
+}Expand commentComment on lines R106 to R117Resolved
+autoload -Uz add-zsh-hook
+add-zsh-hook chpwd auto_activate_venv
+auto_activate_venv
+
+export PATH="$HOME/.local/bin:$PATH"

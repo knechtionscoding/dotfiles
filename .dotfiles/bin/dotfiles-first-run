@@ -15,13 +15,6 @@ trap 'rm -f "${lock_file}"' EXIT
 
 cd
 
-# if [ -n "${GITHUB_CODESPACE_TOKEN}" ] && [ -n "${CODESPACES}" ]; then
-#     (
-#         cd
-#         .dotfiles/bin/dotfiles-codespace-bootstrap
-#     )
-# fi
-
 echo "===="
 echo "This appears to be a new dotfiles instance!"
 printf "git author settings: %s <%s>\n" \
@@ -35,4 +28,136 @@ echo
 echo "Configure with $(tput bold)dotfiles-config$(tput sgr0)"
 echo "===="
 
-touch "${DOTFILES_DATA}/welcome_message"
+# --- Phase 1: Package Manager ---
+
+# Homebrew installation (skip in Codespaces)
+if [ -z "${GITHUB_CODESPACE_TOKEN}" ] && [ -z "${CODESPACES}" ]; then
+    if ! command -v brew >/dev/null 2>&1; then
+        echo "Installing Homebrew..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        if [ "$(uname -s)" = "Darwin" ]; then
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+        else
+            eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        fi
+    fi
+
+    # Run brew bundle if not already done
+    if [ ! -f ~/.config/Brewfile ]; then
+        echo "Running brew bundle..."
+        brew bundle
+        if [ "$(uname -s)" = "Darwin" ]; then
+            brew bundle --file Brewfile.mac
+        fi
+        mkdir -p ~/.config
+        touch ~/.config/Brewfile
+    fi
+fi
+
+# --- Phase 2: Shell Framework ---
+
+# Install oh-my-zsh if missing
+if [ ! -d ~/.oh-my-zsh ]; then
+    echo "Installing oh-my-zsh..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --keep-zshrc
+fi
+
+# Install kube-aliases plugin if missing
+if [ ! -d ~/.oh-my-zsh/custom/plugins/kube-aliases ]; then
+    echo "Installing kube-aliases plugin..."
+    git clone https://github.com/Dbz/kube-aliases.git ~/.oh-my-zsh/custom/plugins/kube-aliases
+fi
+
+# --- Phase 3: CLI Tools (not covered by brew bundle) ---
+
+# fzf — on Linux, install via git clone (macOS handled by brew bundle)
+if [ "$(uname -s)" != "Darwin" ]; then
+    if ! command -v fzf >/dev/null 2>&1 && [ ! -x ~/.fzf/bin/fzf ]; then
+        if [ ! -d ~/.fzf ]; then
+            echo "Installing fzf via git..."
+            git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+        fi
+        ~/.fzf/install --completion --key-bindings --no-update-rc --bin
+    fi
+fi
+
+# krew
+if [ ! -f ~/.krew/bin/kubectl-krew ]; then
+    echo "Installing krew..."
+    ~/.dotfiles/bin/install-krew
+fi
+
+# Go — on Linux, install via brew (macOS handled by brew bundle)
+if [ -z "${GITHUB_CODESPACE_TOKEN}" ] && [ -z "${CODESPACES}" ]; then
+    if ! command -v go >/dev/null 2>&1; then
+        if command -v brew >/dev/null 2>&1; then
+            echo "Installing Go via brew..."
+            brew install go
+        else
+            echo "Warning: brew not available, cannot install Go automatically"
+        fi
+    fi
+fi
+
+# --- Phase 4: Configuration ---
+
+# Git merge/diff tool configuration (VS Code)
+if command -v code >/dev/null 2>&1; then
+    if ! git config --get merge.tool >/dev/null 2>&1; then
+        echo "Configuring Git to use VS Code as merge/diff tool..."
+        git config --global merge.tool vscode
+        git config --global mergetool.vscode.cmd 'code --wait --merge $REMOTE $LOCAL $BASE $MERGED'
+        git config --global diff.tool vscode
+        git config --global difftool.vscode.cmd 'code --wait --diff $LOCAL $REMOTE'
+    fi
+fi
+
+# GnuPG directory permissions
+if [ -d ~/.gnupg ]; then
+    chmod 0700 ~/.gnupg
+    chmod -R og-rwx ~/.gnupg
+fi
+
+# GnuPG agent configuration (cache TTL)
+if [ -z "${GITHUB_CODESPACE_TOKEN}" ] && [ -z "${CODESPACES}" ]; then
+    mkdir -p ~/.gnupg
+    if ! grep -q "max-cache-ttl 1800" ~/.gnupg/gpg-agent.conf 2>/dev/null; then
+        echo "max-cache-ttl 1800" >>~/.gnupg/gpg-agent.conf
+        echo "default-cache-ttl 1800" >>~/.gnupg/gpg-agent.conf
+    fi
+fi
+
+# Darwin-specific GPG configuration
+if [ "$(uname -s)" = "Darwin" ]; then
+    mkdir -p ~/.gnupg
+
+    # Pinentry program
+    if command -v pinentry-mac >/dev/null 2>&1; then
+        pinentry_path="$(which pinentry-mac)"
+        if ! grep -q "pinentry-program" ~/.gnupg/gpg-agent.conf 2>/dev/null; then
+            echo "pinentry-program ${pinentry_path}" >>~/.gnupg/gpg-agent.conf
+        fi
+    fi
+
+    # GPG program in local gitconfig
+    if command -v brew >/dev/null 2>&1 && command -v gpg >/dev/null 2>&1; then
+        if [ ! -f "${HOME}/.local/gitconfig" ]; then
+            touch "${HOME}/.local/gitconfig"
+        fi
+        if ! grep -q "program = $(which gpg)" "${HOME}/.local/gitconfig" 2>/dev/null; then
+            cat >>"${HOME}/.local/gitconfig" <<EOF
+[gpg]
+    program = $(which gpg)
+EOF
+        fi
+    fi
+fi
+
+# GPG verification (run once to warm the agent)
+if command -v gpg >/dev/null 2>&1; then
+    echo "test" | gpg --clearsign >/dev/null 2>&1 || true
+fi
+
+# --- Phase 5: Finalize ---
+
+touch "${DOTFILES_DATA}/first_run_complete"

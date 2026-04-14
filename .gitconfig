@@ -29,6 +29,7 @@
     sort = -committerdate
 [merge]
     conflictstyle = zdiff3 
+	tool = vscode
 [log]
     date = local
 [advice]
@@ -38,6 +39,7 @@
     colorMoved = plain
     mnemonicPrefix = true
     renames = true
+	tool = vscode
 [commit]
     verbose = true
     gpgsign = true
@@ -56,6 +58,7 @@
 	required = true
 [git-town]
 	ship-delete-tracking-branch = true
+	ship-delete-remote-branch = true
 
 [rebase]
         autoSquash = true
@@ -79,3 +82,7 @@
 	ship = town ship
 	sync = town sync
 	up = town up
+[mergetool "vscode"]
+	cmd = code --wait --merge $REMOTE $LOCAL $BASE $MERGED
+[difftool "vscode"]
+	cmd = code --wait --diff $LOCAL $REMOTE
