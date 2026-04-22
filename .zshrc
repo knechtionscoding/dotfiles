@@ -152,3 +152,21 @@ auto_activate_venv
 
 export PATH="$HOME/.local/bin:$PATH"
 source ~/.safe-chain/scripts/init-posix.sh # Safe-chain bash initialization script
+
+# anomalo-auto-venv
+auto_activate_venv() {
+    local dir="$PWD"
+    while [[ "$dir" != "/" ]]; do
+        if [[ -f "$dir/.venv/bin/activate" ]]; then
+            [[ "$VIRTUAL_ENV" == "$dir/.venv" ]] && return
+            source "$dir/.venv/bin/activate"
+            return
+        fi
+        dir="$(dirname "$dir")"
+    done
+    [[ -n "$VIRTUAL_ENV" ]] && deactivate
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook chpwd auto_activate_venv
+auto_activate_venv
+. "/opt/homebrew/opt/nvm/nvm.sh"
