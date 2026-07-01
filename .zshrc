@@ -26,20 +26,6 @@ export TELEPORT_PROXY=anomalo.teleport.sh:443
 export TELEPORT_USER=hans@anomalo.com
 
 export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
-export AWS_REGION="us-west-2"
-export CLAUDE_CODE_USE_BEDROCK="1"
-export ANTHROPIC_DEFAULT_HAIKU_MODEL=arn:aws:bedrock:us-west-2:580663733917:application-inference-profile/wsoiwar1qd41
-export ANTHROPIC_DEFAULT_HAIKU_MODEL_NAME="Haiku 4.5 via Bedrock"
-export ANTHROPIC_DEFAULT_HAIKU_MODEL_DESCRIPTION="Haiku 4.5 routed through a Bedrock inference profile"
-export ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES="effort,thinking"
-export ANTHROPIC_DEFAULT_SONNET_MODEL=arn:aws:bedrock:us-west-2:580663733917:application-inference-profile/chyv1tlre2il
-export ANTHROPIC_DEFAULT_SONNET_MODEL_NAME="Sonnet 4.6 via Bedrock"
-export ANTHROPIC_DEFAULT_SONNET_MODEL_DESCRIPTION="Sonnet 4.6 routed through a Bedrock inference profile"
-export ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES="effort,thinking,adaptive_thinking,interleaved_thinking"
-export ANTHROPIC_DEFAULT_OPUS_MODEL=arn:aws:bedrock:us-west-2:580663733917:application-inference-profile/8a560zije806
-export ANTHROPIC_DEFAULT_OPUS_MODEL_NAME="Opus 4.6 via Bedrock"
-export ANTHROPIC_DEFAULT_OPUS_MODEL_DESCRIPTION="Opus 4.6 routed through a Bedrock inference profile"
-export ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES="effort,max_effort,thinking,adaptive_thinking,interleaved_thinking"
 
 export ZSH_DISABLE_COMPFIX=true
 
@@ -170,3 +156,14 @@ autoload -Uz add-zsh-hook
 add-zsh-hook chpwd auto_activate_venv
 auto_activate_venv
 . "/opt/homebrew/opt/nvm/nvm.sh"
+
+# pnpm
+export PNPM_HOME="/Users/hknecht/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+# Local-only settings (uncommitted machine-specific overrides) — keep last
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local
