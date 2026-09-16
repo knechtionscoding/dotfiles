@@ -158,6 +158,12 @@ if command -v gpg >/dev/null 2>&1; then
     echo "test" | gpg --clearsign >/dev/null 2>&1 || true
 fi
 
+# launchd agents (macOS only)
+if [ "$(uname -s)" = "Darwin" ]; then
+    echo "Installing launch agents..."
+    ~/.dotfiles/bin/install-launchagents
+fi
+
 # --- Phase 5: Finalize ---
 
 touch "${DOTFILES_DATA}/first_run_complete"

@@ -1,0 +1,33 @@
+#!/bin/bash
+# Install any asdf versions listed in dquality's .tool-versions that are
+# missing, so a pull that bumps a pin does not leave a broken shim.
+#
+# Scheduled by ~/Library/LaunchAgents/com.hknecht.asdf-install.plist, rendered
+# from ~/.dotfiles/launchd/ by install-launchagents. A no-op run is instant.
+set -uo pipefail
+
+REPO="${ASDF_INSTALL_REPO:-${HOME}/repos/dquality}"
+
+ASDF=$(command -v asdf 2>/dev/null)
+if [[ -z ${ASDF} ]]; then
+  echo "$(date): asdf not installed, nothing to do"
+  exit 0
+fi
+
+if [[ ! -d ${REPO} ]]; then
+  echo "$(date): ${REPO} not checked out, nothing to do"
+  exit 0
+fi
+
+cd "${REPO}" || exit 1
+
+echo "$(date): asdf install in ${REPO}"
+"${ASDF}" install
+status=$?
+
+if [[ ${status} -eq 0 ]]; then
+  echo "$(date): asdf install ok"
+else
+  echo "$(date): asdf install failed with status ${status}"
+fi
+exit ${status}

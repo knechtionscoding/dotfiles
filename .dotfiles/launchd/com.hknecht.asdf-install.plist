@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Rendered into ~/Library/LaunchAgents by ~/.dotfiles/bin/install-launchagents,
+     which substitutes __HOME__. Do not edit the rendered copy. -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.hknecht.asdf-install</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>__HOME__/.dotfiles/bin/asdf-install-dquality</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>__HOME__/repos/dquality</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:__HOME__/.asdf/shims</string>
+        <key>ASDF_DATA_DIR</key>
+        <string>__HOME__/.asdf</string>
+        <key>HOME</key>
+        <string>__HOME__</string>
+    </dict>
+    <key>StartInterval</key>
+    <integer>86400</integer>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>__HOME__/Library/Logs/asdf-install.log</string>
+    <key>StandardErrorPath</key>
+    <string>__HOME__/Library/Logs/asdf-install.log</string>
+</dict>
+</plist>

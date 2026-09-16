@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Rendered into ~/Library/LaunchAgents by ~/.dotfiles/bin/install-launchagents,
+     which substitutes __HOME__. Do not edit the rendered copy. -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.hknecht.gimme-creds</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>__HOME__/.dotfiles/bin/gimme-creds-refresh</string>
+    </array>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+        <key>HOME</key>
+        <string>__HOME__</string>
+    </dict>
+    <key>StartInterval</key>
+    <integer>3600</integer>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>__HOME__/Library/Logs/gimme-creds.log</string>
+    <key>StandardErrorPath</key>
+    <string>__HOME__/Library/Logs/gimme-creds.log</string>
+</dict>
+</plist>

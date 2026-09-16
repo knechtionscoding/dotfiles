@@ -1,0 +1,43 @@
+#!/bin/bash
+# Refresh the Teleport-issued SVIDs that ~/.aws/config consumes via
+# aws_signing_helper, so AWS credentials stay valid through the day.
+#
+# Scheduled by ~/Library/LaunchAgents/com.hknecht.gimme-creds.plist, rendered
+# from ~/.dotfiles/launchd/ by install-launchagents. The gimme-* shell aliases
+# are not visible to launchd, so the commands are spelled out here.
+set -uo pipefail
+
+TSH=$(command -v tsh 2>/dev/null)
+if [[ -z ${TSH} ]]; then
+  echo "$(date): tsh not installed, nothing to do"
+  exit 0
+fi
+
+# tsh login is interactive browser SSO, so it cannot be scheduled. Without a
+# usable session tsh svid issue would open a browser out of a background job,
+# so bail out and wait for the next tick instead.
+if ! "${TSH}" status --format=json 2>/dev/null | /usr/bin/python3 -c '
+import json, sys, datetime
+try:
+    v = json.load(sys.stdin)["active"]["valid_until"]
+except Exception:
+    sys.exit(1)
+cutoff = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=5)
+sys.exit(0 if datetime.datetime.fromisoformat(v) > cutoff else 1)
+'; then
+  echo "$(date): no usable tsh session, run 'tsh login'"
+  exit 0
+fi
+
+"${TSH}" svid issue --output "${HOME}/.roles-anywhere"         --svid-ttl 12h /svc/codespaces &&
+"${TSH}" svid issue --output "${HOME}/.roles-anywhere-admin"   --svid-ttl 12h /role/administrator &&
+"${TSH}" svid issue --output "${HOME}/.roles-anywhere-sandbox" --svid-ttl 12h /cloud/aws-sandbox &&
+"${TSH}" svid issue --output "${HOME}/.roles-anywhere-gtm"     --svid-ttl 12h /cloud/aws-gotomarket
+status=$?
+
+if [[ ${status} -eq 0 ]]; then
+  echo "$(date): refreshed all four SVIDs"
+else
+  echo "$(date): refresh chain failed with status ${status}"
+fi
+exit ${status}

@@ -35,3 +35,22 @@ rm -rf dotfiles/
 1. `git config --global user.signingkey <key-id>`
 1. `git config --global commit.gpgsign true`
 1. `echo "pinentry-program $(which pinentry-mac)" >> ~/.gnupg/gpg-agent.conf`
+
+## Launch agents (macOS)
+
+`dotfiles-first-run` renders every plist in `.dotfiles/launchd/` into
+`~/Library/LaunchAgents` and loads it. To add, edit or reload one by hand:
+
+```shell
+install-launchagents
+```
+
+Each template uses `__HOME__` where a path is needed; the installer substitutes it,
+so the templates stay portable across machines.
+
+| Agent | Runs | What it does |
+|---|---|---|
+| `com.hknecht.gimme-creds` | hourly | Reissues the four Teleport SVIDs that `~/.aws/config` consumes, keeping AWS credentials valid. Skips quietly when there is no live `tsh` session, since `tsh login` is interactive browser SSO and cannot be scheduled. |
+| `com.hknecht.asdf-install` | daily | Runs `asdf install` in `~/repos/dquality` so a pull that bumps a pin does not leave a broken shim. No-ops when the repo is not checked out. |
+
+Logs land in `~/Library/Logs/gimme-creds.log` and `~/Library/Logs/asdf-install.log`.

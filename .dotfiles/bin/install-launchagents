@@ -1,0 +1,35 @@
+#!/bin/sh
+# Render every plist in ~/.dotfiles/launchd into ~/Library/LaunchAgents and
+# (re)load it. Idempotent, so it is safe to rerun after editing a template or
+# adding an agent. Called from dotfiles-first-run; run it by hand otherwise.
+
+set -e
+
+if [ "$(uname -s)" != "Darwin" ]; then
+    exit 0
+fi
+
+src="${HOME}/.dotfiles/launchd"
+dest="${HOME}/Library/LaunchAgents"
+uid="$(id -u)"
+
+[ -d "${src}" ] || exit 0
+mkdir -p "${dest}" "${HOME}/Library/Logs"
+
+for template in "${src}"/*.plist; do
+    [ -e "${template}" ] || continue
+    name="$(basename "${template}")"
+    label="${name%.plist}"
+
+    sed "s|__HOME__|${HOME}|g" "${template}" >"${dest}/${name}"
+
+    # bootout first so an edited template replaces the loaded definition; the
+    # agent may not be loaded yet, so ignore the failure.
+    launchctl bootout "gui/${uid}/${label}" 2>/dev/null || true
+
+    if launchctl bootstrap "gui/${uid}" "${dest}/${name}"; then
+        echo "loaded ${label}"
+    else
+        echo "warning: could not load ${label}" >&2
+    fi
+done
