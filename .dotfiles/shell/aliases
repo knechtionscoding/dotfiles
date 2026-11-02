@@ -62,6 +62,55 @@ kgpn() {
     kubectl get pods --all-namespaces -o wide --field-selector spec.nodeName=$1
 }
 
+# Remove dquality worktrees whose branch's PR is merged or closed. Dry run unless -f.
+wt-clean() {
+  local repo=~/repos/dquality force=0
+  [[ $1 == -f ]] && force=1
+
+  git -C $repo fetch --quiet --prune origin || return 1
+
+  # Best PR state per branch: OPEN beats MERGED beats CLOSED.
+  typeset -A state rank=(OPEN 3 MERGED 2 CLOSED 1)
+  local b s
+  while IFS=$'\t' read -r b s; do
+    (( ${rank[$s]:-0} > ${rank[${state[$b]}]:-0} )) && state[$b]=$s
+  done < <(gh pr list --repo datagravity-ai/dquality --author @me --state all \
+             --limit 1000 --json headRefName,state \
+             --jq '.[] | "\(.headRefName)\t\(.state)"')
+
+  local p br removed=0 kept=0
+  while IFS=$'\t' read -r p br; do
+    [[ $p == $repo ]] && continue
+    s=${state[$br]:-}
+    if [[ $s != MERGED && $s != CLOSED ]]; then
+      (( kept++ )); continue
+    fi
+    if (( force )); then
+      # Local changes block removal, unless the remote branch is gone too.
+      if git -C $repo worktree remove "$p" 2>/dev/null ||
+         { ! git -C $repo show-ref --quiet "refs/remotes/origin/$br" &&
+           git -C $repo worktree remove --force "$p"; }; then
+        (( removed++ ))
+        # A merged branch's commits are on main; a closed one keeps its branch.
+        [[ $s == MERGED ]] && git -C $repo branch -D --quiet "$br"
+      else
+        print "skipped (local changes, origin/$br still exists)  $p"
+      fi
+    else
+      print "would remove  [$s]  $br  $p"
+      (( removed++ ))
+    fi
+  done < <(git -C $repo worktree list --porcelain | awk '
+    /^worktree /{p=substr($0,10)} /^branch /{sub("refs/heads/","",$2); print p "\t" $2}')
+
+  git -C $repo worktree prune
+  if (( force )); then
+    print "removed $removed, kept $kept"
+  else
+    print "$removed to remove, $kept kept (run wt-clean -f to remove)"
+  fi
+}
+
 
 alias_exists() {
   alias "$1" >/dev/null 2>&1
@@ -69,21 +118,21 @@ alias_exists() {
 
 # conditionally define aliases
 if ! alias_exists gimme-creds; then
-  alias gimme-creds="tsh svid issue --output ~/.roles-anywhere --svid-ttl 12h /svc/codespaces"
+  alias gimme-creds="tsh workload-identity issue-x509 --name-selector codespaces --credential-ttl 12h --output ~/.roles-anywhere"
 fi
 
 if ! alias_exists gimme-admin-creds; then
-  alias gimme-admin-creds="tsh svid issue --output ~/.roles-anywhere-admin --svid-ttl 12h /role/administrator"
+  alias gimme-admin-creds="tsh workload-identity issue-x509 --name-selector administrator --credential-ttl 12h --output ~/.roles-anywhere-admin"
 fi
 
 if ! alias_exists gimme-sandbox-creds; then
-  alias gimme-sandbox-creds="tsh svid issue --output ~/.roles-anywhere-sandbox --svid-ttl 12h /cloud/aws-sandbox"
+  alias gimme-sandbox-creds="tsh workload-identity issue-x509 --name-selector aws-sandbox --credential-ttl 12h --output ~/.roles-anywhere-sandbox"
 fi
 
 if ! alias_exists gimme-bd-creds; then
-  alias gimme-bd-creds="tsh svid issue --output ~/.roles-anywhere-bd --svid-ttl 12h /role/business-development"
+  alias gimme-bd-creds="tsh workload-identity issue-x509 --name-selector business-development --credential-ttl 12h --output ~/.roles-anywhere-bd"
 fi
 
 if ! alias_exists gimme-gtm-creds; then
-  alias gimme-gtm-creds="tsh svid issue --output ~/.roles-anywhere-gtm --svid-ttl 12h /cloud/aws-gotomarket"
+  alias gimme-gtm-creds="tsh workload-identity issue-x509 --name-selector aws-gotomarket --credential-ttl 12h --output ~/.roles-anywhere-gtm"
 fi
