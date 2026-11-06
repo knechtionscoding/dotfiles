@@ -119,7 +119,13 @@ if [ -f "$HOME/.local/bin/env" ]; then
     source "$HOME/.local/bin/env"
 fi
 
+# Linux-only toolchain {{{
+if [ "$(uname -s)" = "Linux" ]; then
+    export PATH="/home/linuxbrew/.linuxbrew/opt/libpq/bin:$PATH"
+fi
+# }}}
 
+# Auto-activate nearest .venv on cd
 auto_activate_venv() {
     local dir="$PWD"
     while [[ "$dir" != "/" ]]; do
@@ -137,28 +143,14 @@ add-zsh-hook chpwd auto_activate_venv
 auto_activate_venv
 
 export PATH="$HOME/.local/bin:$PATH"
-source ~/.safe-chain/scripts/init-posix.sh # Safe-chain bash initialization script
-
-# anomalo-auto-venv
-auto_activate_venv() {
-    local dir="$PWD"
-    while [[ "$dir" != "/" ]]; do
-        if [[ -f "$dir/.venv/bin/activate" ]]; then
-            [[ "$VIRTUAL_ENV" == "$dir/.venv" ]] && return
-            source "$dir/.venv/bin/activate"
-            return
-        fi
-        dir="$(dirname "$dir")"
-    done
-    [[ -n "$VIRTUAL_ENV" ]] && deactivate
-}
-autoload -Uz add-zsh-hook
-add-zsh-hook chpwd auto_activate_venv
-auto_activate_venv
-. "/opt/homebrew/opt/nvm/nvm.sh"
+[ -f ~/.safe-chain/scripts/init-posix.sh ] && source ~/.safe-chain/scripts/init-posix.sh # Safe-chain init
 
 # pnpm
-export PNPM_HOME="/Users/hknecht/Library/pnpm"
+if [ "$(uname -s)" = "Darwin" ]; then
+    export PNPM_HOME="$HOME/Library/pnpm"
+else
+    export PNPM_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/pnpm"
+fi
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
